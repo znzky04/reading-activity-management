@@ -1,10 +1,10 @@
 <template>
   <div class="settings-page">
     <div class="container">
-      <h1 class="page-title">设置</h1>
+      <h1 class="page-title">Settings</h1>
       
       <div class="settings-wrapper">
-        <!-- 左侧菜单 -->
+        <!-- Left Menu -->
         <div class="settings-menu">
           <div 
             v-for="(item, index) in menuItems" 
@@ -16,14 +16,14 @@
           </div>
         </div>
         
-        <!-- 右侧内容区域 -->
+        <!-- Right Content Area -->
         <div class="settings-content">
-          <!-- 修改头像 -->
+          <!-- Change Avatar -->
           <div v-if="activeTab === 'avatar'" class="tab-content">
-            <h2>修改头像</h2>
+            <h2>Change Avatar</h2>
             <div class="avatar-wrapper">
               <div class="current-avatar">
-                <img :src="currentAvatar || '/default-avatar.png'" alt="用户头像" />
+                <img :src="currentAvatar || '/default-avatar.png'" alt="User Avatar" />
               </div>
               <div class="upload-area">
                 <el-upload
@@ -32,93 +32,93 @@
                   :show-file-list="false"
                   :on-change="handleAvatarChange"
                 >
-                  <el-button type="primary">选择图片</el-button>
+                  <el-button type="primary">Select Image</el-button>
                 </el-upload>
-                <p class="tip">支持jpg、png格式，文件小于2MB</p>
+                <p class="tip">Supports jpg, png formats, file size less than 2MB</p>
               </div>
             </div>
-            <el-button type="primary" :disabled="!newAvatar" @click="saveAvatar">保存头像</el-button>
+            <el-button type="primary" :disabled="!newAvatar" @click="saveAvatar">Save Avatar</el-button>
           </div>
           
-          <!-- 修改密码 -->
+          <!-- Change Password -->
           <div v-if="activeTab === 'password'" class="tab-content">
-            <h2>修改密码</h2>
+            <h2>Change Password</h2>
             <el-form :model="passwordForm" :rules="passwordRules" ref="passwordFormRef" label-width="100px">
-              <el-form-item label="原密码" prop="oldPassword">
+              <el-form-item label="Current Password" prop="oldPassword">
                 <el-input v-model="passwordForm.oldPassword" type="password" show-password></el-input>
               </el-form-item>
-              <el-form-item label="新密码" prop="newPassword">
+              <el-form-item label="New Password" prop="newPassword">
                 <el-input v-model="passwordForm.newPassword" type="password" show-password></el-input>
               </el-form-item>
-              <el-form-item label="确认密码" prop="confirmPassword">
+              <el-form-item label="Confirm Password" prop="confirmPassword">
                 <el-input v-model="passwordForm.confirmPassword" type="password" show-password></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="savePassword">修改密码</el-button>
+                <el-button type="primary" @click="savePassword">Update Password</el-button>
               </el-form-item>
             </el-form>
           </div>
           
-          <!-- 修改邮箱 -->
+          <!-- Change Email -->
           <div v-if="activeTab === 'email'" class="tab-content">
-            <h2>修改邮箱</h2>
-            <p class="current-email">当前邮箱：{{ userEmail }}</p>
+            <h2>Change Email</h2>
+            <p class="current-email">Current Email: {{ userEmail }}</p>
             <el-form :model="emailForm" :rules="emailRules" ref="emailFormRef" label-width="100px">
-              <el-form-item label="新邮箱" prop="newEmail">
+              <el-form-item label="New Email" prop="newEmail">
                 <el-input v-model="emailForm.newEmail"></el-input>
               </el-form-item>
-              <el-form-item label="验证码" prop="verifyCode">
+              <el-form-item label="Verification Code" prop="verifyCode">
                 <div class="verify-code-wrapper">
                   <el-input v-model="emailForm.verifyCode"></el-input>
                   <el-button 
                     :disabled="countDown > 0" 
                     @click="sendVerifyCode"
                   >
-                    {{ countDown > 0 ? `${countDown}秒后重发` : '获取验证码' }}
+                    {{ countDown > 0 ? `Resend in ${countDown}s` : 'Get Code' }}
                   </el-button>
                 </div>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="saveEmail">修改邮箱</el-button>
+                <el-button type="primary" @click="saveEmail">Update Email</el-button>
               </el-form-item>
             </el-form>
           </div>
           
-          <!-- 账号安全 -->
+          <!-- Account Security -->
           <div v-if="activeTab === 'security'" class="tab-content">
-            <h2>账号安全</h2>
+            <h2>Account Security</h2>
             <div class="security-wrapper">
               <p class="warning">
                 <i class="el-icon-warning"></i>
-                账号注销后，所有数据将被永久删除且无法恢复，请谨慎操作
+                After deleting your account, all data will be permanently deleted and cannot be recovered. Please proceed with caution.
               </p>
-              <el-button type="danger" @click="showDeleteConfirm">注销账号</el-button>
+              <el-button type="danger" @click="showDeleteConfirm">Delete Account</el-button>
             </div>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- 注销账号确认对话框 -->
+    <!-- Delete Account Confirmation Dialog -->
     <el-dialog
-      title="注销账号确认"
+      title="Delete Account Confirmation"
       v-model="deleteDialogVisible"
       width="400px"
     >
       <div class="delete-confirm">
         <p class="warning-text">
-          账号注销后，您的所有数据将被永久删除且无法恢复。
-          请确认该操作：
+          After deleting your account, all your data will be permanently deleted and cannot be recovered.
+          Please confirm this action:
         </p>
         <el-input
           type="password"
           v-model="deleteConfirmPassword"
-          placeholder="请输入密码确认"
+          placeholder="Enter your password to confirm"
         ></el-input>
       </div>
       <template #footer>
-        <el-button @click="deleteDialogVisible = false">取消</el-button>
-        <el-button type="danger" @click="confirmDeleteAccount">确认注销</el-button>
+        <el-button @click="deleteDialogVisible = false">Cancel</el-button>
+        <el-button type="danger" @click="confirmDeleteAccount">Confirm Delete</el-button>
       </template>
     </el-dialog>
   </div>
@@ -131,21 +131,21 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'Settings',
   setup() {
-    // 菜单标签页
+    // Menu tabs
     const activeTab = ref('avatar')
     const menuItems = [
-      { key: 'avatar', label: '修改头像' },
-      { key: 'password', label: '修改密码' },
-      { key: 'email', label: '修改邮箱' },
-      { key: 'security', label: '账号安全' },
+      { key: 'avatar', label: 'Change Avatar' },
+      { key: 'password', label: 'Change Password' },
+      { key: 'email', label: 'Change Email' },
+      { key: 'security', label: 'Account Security' },
     ]
     
-    // 用户数据
+    // User data
     const userEmail = ref('user@example.com')
     const currentAvatar = ref('')
     const newAvatar = ref(null)
     
-    // 修改密码表单
+    // Password form
     const passwordFormRef = ref(null)
     const passwordForm = reactive({
       oldPassword: '',
@@ -154,18 +154,18 @@ export default {
     })
     const passwordRules = {
       oldPassword: [
-        { required: true, message: '请输入原密码', trigger: 'blur' }
+        { required: true, message: 'Please enter your current password', trigger: 'blur' }
       ],
       newPassword: [
-        { required: true, message: '请输入新密码', trigger: 'blur' },
-        { min: 6, message: '密码长度不能少于6个字符', trigger: 'blur' }
+        { required: true, message: 'Please enter a new password', trigger: 'blur' },
+        { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
       ],
       confirmPassword: [
-        { required: true, message: '请确认新密码', trigger: 'blur' },
+        { required: true, message: 'Please confirm your new password', trigger: 'blur' },
         { 
           validator: (rule, value, callback) => {
             if (value !== passwordForm.newPassword) {
-              callback(new Error('两次输入的密码不一致'))
+              callback(new Error('Passwords do not match'))
             } else {
               callback()
             }
@@ -175,7 +175,7 @@ export default {
       ]
     }
     
-    // 修改邮箱表单
+    // Email form
     const emailFormRef = ref(null)
     const emailForm = reactive({
       newEmail: '',
@@ -183,35 +183,35 @@ export default {
     })
     const emailRules = {
       newEmail: [
-        { required: true, message: '请输入新邮箱', trigger: 'blur' },
-        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+        { required: true, message: 'Please enter a new email', trigger: 'blur' },
+        { type: 'email', message: 'Please enter a valid email address', trigger: 'blur' }
       ],
       verifyCode: [
-        { required: true, message: '请输入验证码', trigger: 'blur' },
-        { len: 6, message: '验证码是6位数字', trigger: 'blur' }
+        { required: true, message: 'Please enter the verification code', trigger: 'blur' },
+        { len: 6, message: 'Verification code must be 6 digits', trigger: 'blur' }
       ]
     }
     
-    // 验证码倒计时
+    // Verification code countdown
     const countDown = ref(0)
     
-    // 注销账号相关
+    // Account deletion related
     const deleteDialogVisible = ref(false)
     const deleteConfirmPassword = ref('')
     
-    // 初始化用户数据
+    // Initialize user data
     onMounted(() => {
-      // 模拟从API获取数据
+      // Simulate API data fetch
       setTimeout(() => {
         userEmail.value = 'user@example.com'
         currentAvatar.value = '/default-avatar.png'
       }, 500)
     })
     
-    // 头像处理
+    // Avatar handling
     const handleAvatarChange = (file) => {
       newAvatar.value = file.raw
-      // 预览图片
+      // Preview image
       const reader = new FileReader()
       reader.readAsDataURL(file.raw)
       reader.onload = () => {
@@ -221,26 +221,26 @@ export default {
     
     const saveAvatar = () => {
       if (!newAvatar.value) {
-        ElMessage.warning('请先选择图片')
+        ElMessage.warning('Please select an image first')
         return
       }
       
-      // 模拟上传
+      // Simulate upload
       setTimeout(() => {
-        ElMessage.success('头像更新成功')
+        ElMessage.success('Avatar updated successfully')
         newAvatar.value = null
       }, 1000)
     }
     
-    // 密码处理
+    // Password handling
     const savePassword = async () => {
       if (!passwordFormRef.value) return
       
       await passwordFormRef.value.validate((valid) => {
         if (valid) {
-          // 模拟API请求
+          // Simulate API request
           setTimeout(() => {
-            ElMessage.success('密码修改成功')
+            ElMessage.success('Password updated successfully')
             passwordForm.oldPassword = ''
             passwordForm.newPassword = ''
             passwordForm.confirmPassword = ''
@@ -249,14 +249,14 @@ export default {
       })
     }
     
-    // 邮箱处理
+    // Email handling
     const sendVerifyCode = () => {
       if (!emailForm.newEmail) {
-        ElMessage.warning('请先输入新邮箱')
+        ElMessage.warning('Please enter your new email first')
         return
       }
       
-      // 模拟发送验证码
+      // Simulate sending verification code
       countDown.value = 60
       const timer = setInterval(() => {
         countDown.value--
@@ -265,7 +265,7 @@ export default {
         }
       }, 1000)
       
-      ElMessage.success(`验证码已发送至 ${emailForm.newEmail}`)
+      ElMessage.success(`Verification code sent to ${emailForm.newEmail}`)
     }
     
     const saveEmail = async () => {
@@ -273,10 +273,10 @@ export default {
       
       await emailFormRef.value.validate((valid) => {
         if (valid) {
-          // 模拟API请求
+          // Simulate API request
           setTimeout(() => {
             userEmail.value = emailForm.newEmail
-            ElMessage.success('邮箱修改成功')
+            ElMessage.success('Email updated successfully')
             emailForm.newEmail = ''
             emailForm.verifyCode = ''
           }, 1000)
@@ -284,26 +284,26 @@ export default {
       })
     }
     
-    // 账号注销
+    // Account deletion
     const showDeleteConfirm = () => {
       deleteDialogVisible.value = true
     }
     
     const confirmDeleteAccount = () => {
       if (!deleteConfirmPassword.value) {
-        ElMessage.warning('请输入密码确认')
+        ElMessage.warning('Please enter your password to confirm')
         return
       }
       
-      // 模拟API请求
+      // Simulate API request
       setTimeout(() => {
         deleteDialogVisible.value = false
         deleteConfirmPassword.value = ''
         
-        ElMessageBox.alert('账号已成功注销，即将退出登录', '操作成功', {
-          confirmButtonText: '确定',
+        ElMessageBox.alert('Your account has been deleted successfully. You will be logged out.', 'Operation Successful', {
+          confirmButtonText: 'OK',
           callback: () => {
-            // 清除本地存储并跳转
+            // Clear local storage and redirect
             localStorage.removeItem('token')
             localStorage.removeItem('userRole')
             window.location.href = '/'
@@ -313,26 +313,26 @@ export default {
     }
     
     return {
-      // 菜单相关
+      // Menu related
       activeTab,
       menuItems,
       
-      // 用户数据
+      // User data
       userEmail,
       currentAvatar,
       newAvatar,
       
-      // 头像相关
+      // Avatar related
       handleAvatarChange,
       saveAvatar,
       
-      // 密码相关
+      // Password related
       passwordFormRef,
       passwordForm,
       passwordRules,
       savePassword,
       
-      // 邮箱相关
+      // Email related
       emailFormRef,
       emailForm,
       emailRules,
@@ -340,7 +340,7 @@ export default {
       sendVerifyCode,
       saveEmail,
       
-      // 账号注销相关
+      // Account deletion related
       deleteDialogVisible,
       deleteConfirmPassword,
       showDeleteConfirm,
@@ -375,7 +375,7 @@ export default {
   overflow: hidden;
 }
 
-/* 左侧菜单 */
+/* Left menu */
 .settings-menu {
   width: 200px;
   background: #f5f7fa;
@@ -402,7 +402,7 @@ export default {
   border-right: 3px solid #409eff;
 }
 
-/* 右侧内容 */
+/* Right content */
 .settings-content {
   flex: 1;
   padding: 20px 30px;
@@ -419,7 +419,7 @@ export default {
   font-weight: 500;
 }
 
-/* 头像上传 */
+/* Avatar upload */
 .avatar-wrapper {
   display: flex;
   align-items: center;
@@ -450,7 +450,7 @@ export default {
   color: #909399;
 }
 
-/* 邮箱验证码 */
+/* Email verification code */
 .current-email {
   margin-bottom: 20px;
   color: #606266;
@@ -464,7 +464,7 @@ export default {
   margin-right: 10px;
 }
 
-/* 账号安全 */
+/* Account security */
 .security-wrapper {
   padding: 20px;
   background: #f8f8f8;
@@ -480,7 +480,7 @@ export default {
   margin-right: 5px;
 }
 
-/* 注销确认 */
+/* Delete confirmation */
 .delete-confirm .warning-text {
   color: #f56c6c;
   margin-bottom: 15px;

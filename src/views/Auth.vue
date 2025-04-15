@@ -2,11 +2,11 @@
   <div class="auth-container">
     <div class="auth-card">
       <div class="logo">
-        <router-link to="/">阅读活动管理系统</router-link>
+        <router-link to="/">Reading Activity Management System</router-link>
       </div>
       
       <el-tabs v-model="activeTab" class="auth-tabs">
-        <el-tab-pane label="登录" name="login">
+        <el-tab-pane label="Login" name="login">
           <el-form
             ref="loginFormRef"
             :model="loginForm"
@@ -14,19 +14,19 @@
             label-position="top"
             @submit.prevent="handleLogin"
           >
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="Email" prop="email">
               <el-input 
                 v-model="loginForm.email" 
-                placeholder="请输入邮箱" 
+                placeholder="Please enter email" 
                 type="email"
                 prefix-icon="Message"
               />
             </el-form-item>
             
-            <el-form-item label="密码" prop="password">
+            <el-form-item label="Password" prop="password">
               <el-input 
                 v-model="loginForm.password" 
-                placeholder="请输入密码" 
+                placeholder="Please enter password" 
                 type="password"
                 prefix-icon="Lock"
                 show-password
@@ -34,8 +34,8 @@
             </el-form-item>
             
             <div class="form-options">
-              <el-checkbox v-model="loginForm.remember">记住我</el-checkbox>
-              <el-button type="text" size="small">忘记密码？</el-button>
+              <el-checkbox v-model="loginForm.remember">Remember me</el-checkbox>
+              <el-button type="text" size="small">Forgot password?</el-button>
             </div>
             
             <el-form-item>
@@ -45,13 +45,13 @@
                 :loading="loading"
                 @click="handleLogin"
               >
-                登录
+                Login
               </el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
         
-        <el-tab-pane label="注册" name="register">
+        <el-tab-pane label="Register" name="register">
           <el-form
             ref="registerFormRef"
             :model="registerForm"
@@ -59,29 +59,29 @@
             label-position="top"
             @submit.prevent="handleRegister"
           >
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="Email" prop="email">
               <el-input 
                 v-model="registerForm.email" 
-                placeholder="请输入邮箱" 
+                placeholder="Please enter email" 
                 type="email"
                 prefix-icon="Message"
               />
             </el-form-item>
             
-            <el-form-item label="密码" prop="password">
+            <el-form-item label="Password" prop="password">
               <el-input 
                 v-model="registerForm.password" 
-                placeholder="请输入密码" 
+                placeholder="Please enter password" 
                 type="password"
                 prefix-icon="Lock"
                 show-password
               />
             </el-form-item>
             
-            <el-form-item label="确认密码" prop="confirmPassword">
+            <el-form-item label="Confirm Password" prop="confirmPassword">
               <el-input 
                 v-model="registerForm.confirmPassword" 
-                placeholder="请再次输入密码" 
+                placeholder="Please enter password again" 
                 type="password"
                 prefix-icon="Lock"
                 show-password
@@ -95,7 +95,7 @@
                 :loading="loading"
                 @click="handleRegister"
               >
-                注册
+                Register
               </el-button>
             </el-form-item>
           </el-form>
@@ -104,7 +104,7 @@
     </div>
     
     <div class="auth-footer">
-      &copy; {{ new Date().getFullYear() }} 阅读活动管理系统 - 版权所有
+      &copy; {{ new Date().getFullYear() }} Reading Activity Management System - All rights reserved
     </div>
   </div>
 </template>
@@ -141,30 +141,30 @@ const registerForm = reactive({
 // 校验规则
 const loginRules = {
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+    { required: true, message: 'Please enter email', trigger: 'blur' },
+    { type: 'email', message: 'Please enter correct email format', trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+    { required: true, message: 'Please enter password', trigger: 'blur' },
+    { min: 6, message: 'Password length cannot be less than 6 digits', trigger: 'blur' }
   ]
 }
 
 const registerRules = {
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+    { required: true, message: 'Please enter email', trigger: 'blur' },
+    { type: 'email', message: 'Please enter correct email format', trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+    { required: true, message: 'Please enter password', trigger: 'blur' },
+    { min: 6, message: 'Password length cannot be less than 6 digits', trigger: 'blur' }
   ],
   confirmPassword: [
-    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    { required: true, message: 'Please enter password again', trigger: 'blur' },
     { 
       validator: (rule, value, callback) => {
         if (value !== registerForm.password) {
-          callback(new Error('两次输入的密码不一致'))
+          callback(new Error('Two input passwords are inconsistent'))
         } else {
           callback()
         }
@@ -183,28 +183,28 @@ const handleLogin = async () => {
     
     try {
       loading.value = true
-      console.log('开始登录...')
+      console.log('Start login...')
       
       const result = await userStore.login(loginForm)
-      console.log('登录结果:', result)
+      console.log('Login result:', result)
       
       ElMessage({
         type: 'success',
-        message: '登录成功！'
+        message: 'Login successful!'
       })
       
-      // 等待消息显示完毕后再强制导航
+      // Wait for message display to complete before forcing navigation
       setTimeout(() => {
-        // 根据角色跳转到不同页面
+        // Navigate based on role
         const targetRoute = result.role === 'admin' ? '/admin/dashboard' : '/dashboard'
-        console.log('尝试导航到:', targetRoute)
+        console.log('Attempting to navigate to:', targetRoute)
         
-        // 使用 replace 强制跳转
+        // Use replace to force redirect
         window.location.href = targetRoute
       }, 1000)
     } catch (error) {
-      ElMessage.error('登录失败，请检查账号密码')
-      console.error('登录错误:', error)
+      ElMessage.error('Login failed, please check account password')
+      console.error('Login error:', error)
     } finally {
       loading.value = false
     }
@@ -224,16 +224,16 @@ const handleRegister = async () => {
       
       ElMessage({
         type: 'success',
-        message: '注册成功！请前往邮箱验证。'
+        message: 'Registration successful! Please go to email for verification.'
       })
       
-      // 跳转到验证页面
+      // Jump to verification page
       router.push({
         path: '/verify',
         query: { email: registerForm.email }
       })
     } catch (error) {
-      ElMessage.error('注册失败，请稍后再试')
+      ElMessage.error('Registration failed, please try again later')
       console.error(error)
     } finally {
       loading.value = false
@@ -298,7 +298,7 @@ const handleRegister = async () => {
   text-align: center;
 }
 
-/* 响应式调整 */
+/* Responsive adjustments */
 @media (max-width: 480px) {
   .auth-card {
     padding: 20px;

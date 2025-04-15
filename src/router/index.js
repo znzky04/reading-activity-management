@@ -1,103 +1,103 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// 路由配置
+// Route configuration
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: () => import('../views/Home.vue'),
-    meta: { title: '首页' }
+    meta: { title: 'Home' }
   },
   {
     path: '/auth',
     name: 'Auth',
     component: () => import('../views/Auth.vue'),
-    meta: { title: '登录/注册' }
+    meta: { title: 'Login/Register' }
   },
   {
     path: '/verify',
     name: 'Verify',
     component: () => import('../views/Verify.vue'),
-    meta: { title: '邮箱验证' }
+    meta: { title: 'Email Verification' }
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../views/Dashboard.vue'),
-    meta: { title: '用户主页', requiresAuth: true }
+    meta: { title: 'User Dashboard', requiresAuth: true }
   },
   {
     path: '/logs',
     name: 'Logs',
     component: () => import('../views/Logs.vue'),
-    meta: { title: '阅读日志管理', requiresAuth: true }
+    meta: { title: 'Reading Log Management', requiresAuth: true }
   },
   {
     path: '/logs/:id',
     name: 'LogDetail',
     component: () => import('../views/LogDetail.vue'),
-    meta: { title: '日志详情', requiresAuth: true }
+    meta: { title: 'Log Details', requiresAuth: true }
   },
   {
     path: '/logs/create',
     name: 'LogCreate',
     component: () => import('../views/LogEdit.vue'),
-    meta: { title: '新增日志', requiresAuth: true }
+    meta: { title: 'Create Log', requiresAuth: true }
   },
   {
     path: '/logs/edit/:id',
     name: 'LogEdit',
     component: () => import('../views/LogEdit.vue'),
-    meta: { title: '编辑日志', requiresAuth: true }
+    meta: { title: 'Edit Log', requiresAuth: true }
   },
   {
     path: '/settings',
     name: 'Settings',
     component: () => import('../views/Settings.vue'),
-    meta: { title: '设置', requiresAuth: true }
+    meta: { title: 'Settings', requiresAuth: true }
   },
   {
     path: '/messages',
     name: 'Messages',
     component: () => import('../views/Messages.vue'),
-    meta: { title: '消息中心', requiresAuth: true }
+    meta: { title: 'Message Center', requiresAuth: true }
   },
   {
     path: '/feedback',
     name: 'Feedback',
     component: () => import('../views/Feedback.vue'),
-    meta: { title: '反馈', requiresAuth: true }
+    meta: { title: 'Feedback', requiresAuth: true }
   },
   {
     path: '/appeal',
     name: 'Appeal',
     component: () => import('../views/Appeal.vue'),
-    meta: { title: '申诉', requiresAuth: true }
+    meta: { title: 'Appeal', requiresAuth: true }
   },
-  // 管理员路由
+  // Admin routes
   {
     path: '/admin/dashboard',
     name: 'AdminDashboard',
     component: () => import('../views/admin/Dashboard.vue'),
-    meta: { title: '管理员主页', requiresAuth: true, isAdmin: true }
+    meta: { title: 'Admin Dashboard', requiresAuth: true, isAdmin: true }
   },
   {
     path: '/admin/users',
     name: 'AdminUsers',
     component: () => import('../views/admin/Users.vue'),
-    meta: { title: '用户管理', requiresAuth: true, isAdmin: true }
+    meta: { title: 'User Management', requiresAuth: true, isAdmin: true }
   },
   {
     path: '/admin/reviews',
     name: 'AdminReviews',
     component: () => import('../views/admin/Reviews.vue'),
-    meta: { title: '日志审核', requiresAuth: true, isAdmin: true }
+    meta: { title: 'Log Review', requiresAuth: true, isAdmin: true }
   },
   {
     path: '/admin/feedbacks',
     name: 'AdminFeedbacks',
     component: () => import('../views/admin/Feedbacks.vue'),
-    meta: { title: '用户反馈管理', requiresAuth: true, isAdmin: true }
+    meta: { title: 'User Feedback Management', requiresAuth: true, isAdmin: true }
   }
 ]
 
@@ -106,16 +106,16 @@ const router = createRouter({
   routes
 })
 
-// 全局前置守卫
+// Global navigation guard
 router.beforeEach((to, from, next) => {
-  // 设置标题
-  document.title = to.meta.title ? `${to.meta.title} - 阅读活动管理系统` : '阅读活动管理系统'
+  // Set page title
+  document.title = to.meta.title ? `${to.meta.title} - Reading Activity Management System` : 'Reading Activity Management System'
   
-  // 获取token (模拟登录状态)
+  // Get token (simulated login state)
   const token = localStorage.getItem('token')
-  const userRole = localStorage.getItem('userRole') // 'user' 或 'admin'
+  const userRole = localStorage.getItem('userRole') // 'user' or 'admin'
   
-  console.log('[路由守卫] 检查权限:', { 
+  console.log('[Route Guard] Checking permissions:', { 
     path: to.fullPath, 
     requiresAuth: to.meta.requiresAuth, 
     isAdmin: to.meta.isAdmin,
@@ -123,23 +123,23 @@ router.beforeEach((to, from, next) => {
     userRole
   })
   
-  // 需要登录的页面
+  // Pages requiring login
   if (to.meta.requiresAuth && !token) {
-    console.log('[路由守卫] 需要登录，重定向到登录页')
+    console.log('[Route Guard] Login required, redirecting to login page')
     next({ name: 'Auth' })
   } 
-  // 需要管理员权限的页面
+  // Pages requiring admin permissions
   else if (to.meta.isAdmin && userRole !== 'admin') {
-    console.log('[路由守卫] 需要管理员权限，重定向到用户主页')
+    console.log('[Route Guard] Admin permissions required, redirecting to user dashboard')
     next({ name: 'Dashboard' })
   }
-  // 已登录用户访问登录页，重定向到主页
+  // Logged in users accessing login page, redirect to dashboard
   else if (token && (to.name === 'Auth' || to.path === '/auth')) {
-    console.log('[路由守卫] 已登录用户访问登录页，重定向到相应主页')
+    console.log('[Route Guard] Logged in user accessing login page, redirecting to appropriate dashboard')
     next({ name: userRole === 'admin' ? 'AdminDashboard' : 'Dashboard' })
   }
   else {
-    console.log('[路由守卫] 允许访问:', to.fullPath)
+    console.log('[Route Guard] Access allowed:', to.fullPath)
     next()
   }
 })

@@ -1,24 +1,24 @@
 <template>
   <div class="admin-reviews">
     <div class="container">
-      <h1 class="page-title">日志审核</h1>
+      <h1 class="page-title">Log Review</h1>
       
-      <!-- 筛选区域 -->
+      <!-- Filter section -->
       <div class="filter-section">
         <el-select 
           v-model="statusFilter" 
-          placeholder="审核状态" 
+          placeholder="Review Status" 
           @change="handleStatusChange"
           class="status-filter"
         >
-          <el-option label="待审核" value="pending"></el-option>
-          <el-option label="已通过" value="approved"></el-option>
-          <el-option label="已拒绝" value="rejected"></el-option>
-          <el-option label="全部" value="all"></el-option>
+          <el-option label="Pending" value="pending"></el-option>
+          <el-option label="Approved" value="approved"></el-option>
+          <el-option label="Rejected" value="rejected"></el-option>
+          <el-option label="All" value="all"></el-option>
         </el-select>
       </div>
       
-      <!-- 日志列表 -->
+      <!-- Log list -->
       <div class="logs-container" v-loading="loading">
         <template v-if="logsList.length > 0">
           <div 
@@ -38,8 +38,8 @@
                 </el-tag>
               </div>
               <div class="log-meta">
-                <span>作者: {{ log.author }}</span>
-                <span>提交时间: {{ log.submitDate }}</span>
+                <span>Author: {{ log.author }}</span>
+                <span>Submitted Date: {{ log.submitDate }}</span>
               </div>
             </div>
             
@@ -54,7 +54,7 @@
                 plain
                 @click="viewLogDetail(log.id)"
               >
-                查看详情
+                View Details
               </el-button>
               
               <template v-if="log.status === 'pending'">
@@ -63,7 +63,7 @@
                   size="small"
                   @click="approveLog(log)"
                 >
-                  通过
+                  Approve
                 </el-button>
                 
                 <el-button 
@@ -71,7 +71,7 @@
                   size="small"
                   @click="openRejectDialog(log)"
                 >
-                  不通过
+                  Reject
                 </el-button>
               </template>
               
@@ -85,19 +85,19 @@
                   size="small"
                   plain
                 >
-                  更多操作<i class="el-icon-arrow-down el-icon--right"></i>
+                  More Actions<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="delete">删除日志</el-dropdown-item>
-                    <el-dropdown-item command="ban" divided>封禁作者</el-dropdown-item>
+                    <el-dropdown-item command="delete">Delete Log</el-dropdown-item>
+                    <el-dropdown-item command="ban" divided>Ban Author</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </div>
           </div>
           
-          <!-- 分页 -->
+          <!-- Pagination -->
           <div class="pagination-container">
             <el-pagination
               @size-change="handleSizeChange"
@@ -114,14 +114,14 @@
         
         <div v-else class="empty-data">
           <i class="el-icon-document"></i>
-          <p>暂无{{ statusFilter === 'pending' ? '待审核' : '' }}日志</p>
+          <p>No {{ statusFilter === 'pending' ? 'Pending' : '' }} logs</p>
         </div>
       </div>
       
-      <!-- 日志详情对话框 -->
+      <!-- Log detail dialog -->
       <el-dialog 
         v-model="logDetailVisible" 
-        title="日志详情" 
+        title="Log Details" 
         width="700px"
       >
         <div v-if="selectedLog" class="log-detail">
@@ -129,23 +129,23 @@
             <h2>{{ selectedLog.title }}</h2>
             <div class="detail-meta">
               <div class="meta-item">
-                <span class="meta-label">作者:</span>
+                <span class="meta-label">Author:</span>
                 <span>{{ selectedLog.author }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">阅读日期:</span>
+                <span class="meta-label">Reading Date:</span>
                 <span>{{ selectedLog.readDate }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">阅读时长:</span>
+                <span class="meta-label">Reading Duration:</span>
                 <span>{{ selectedLog.readDuration }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">提交时间:</span>
+                <span class="meta-label">Submitted Date:</span>
                 <span>{{ selectedLog.submitDate }}</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">状态:</span>
+                <span class="meta-label">Status:</span>
                 <el-tag :type="getStatusType(selectedLog.status)">
                   {{ getStatusText(selectedLog.status) }}
                 </el-tag>
@@ -154,7 +154,7 @@
           </div>
           
           <div class="detail-content">
-            <h3>内容</h3>
+            <h3>Content</h3>
             <div class="content-box">
               {{ selectedLog.content }}
             </div>
@@ -165,61 +165,61 @@
               type="success" 
               @click="approveLog(selectedLog); logDetailVisible = false"
             >
-              通过
+              Approve
             </el-button>
             
             <el-button 
               type="danger" 
               @click="openRejectDialog(selectedLog); logDetailVisible = false"
             >
-              不通过
+              Reject
             </el-button>
             
             <el-button 
               @click="handleCommand('delete', selectedLog); logDetailVisible = false"
             >
-              删除日志
+              Delete Log
             </el-button>
             
             <el-button 
               type="warning" 
               @click="handleCommand('ban', selectedLog); logDetailVisible = false"
             >
-              封禁作者
+              Ban Author
             </el-button>
           </div>
           
           <div class="reject-info" v-if="selectedLog.status === 'rejected'">
-            <h3>拒绝原因</h3>
+            <h3>Rejection Reason</h3>
             <p>{{ selectedLog.rejectReason }}</p>
           </div>
         </div>
       </el-dialog>
       
-      <!-- 拒绝原因对话框 -->
+      <!-- Rejection reason dialog -->
       <el-dialog 
         v-model="rejectDialogVisible" 
-        title="拒绝日志" 
+        title="Reject Log" 
         width="500px"
       >
         <div class="reject-dialog">
-          <p>您确定要拒绝通过日志 <strong>{{ rejectLog?.title }}</strong> 吗？</p>
+          <p>Are you sure you want to reject the log <strong>{{ rejectLog?.title }}</strong>?</p>
           
           <el-form :model="rejectForm" :rules="rejectRules" ref="rejectFormRef" label-width="80px">
-            <el-form-item label="拒绝原因" prop="reason">
+            <el-form-item label="Rejection Reason" prop="reason">
               <el-input 
                 type="textarea" 
                 v-model="rejectForm.reason"
                 :rows="3"
-                placeholder="请输入拒绝原因"
+                placeholder="Please enter the rejection reason"
               ></el-input>
             </el-form-item>
           </el-form>
         </div>
         
         <template #footer>
-          <el-button @click="rejectDialogVisible = false">取消</el-button>
-          <el-button type="danger" @click="confirmRejectLog">确认拒绝</el-button>
+          <el-button @click="rejectDialogVisible = false">Cancel</el-button>
+          <el-button type="danger" @click="confirmRejectLog">Confirm Rejection</el-button>
         </template>
       </el-dialog>
     </div>
@@ -237,22 +237,22 @@ export default {
     const router = useRouter()
     const loading = ref(false)
     
-    // 筛选
+    // Filter
     const statusFilter = ref('pending')
     
-    // 分页
+    // Pagination
     const currentPage = ref(1)
     const pageSize = ref(10)
     const totalItems = ref(0)
     
-    // 日志列表
+    // Log list
     const logsList = ref([])
     
-    // 日志详情
+    // Log detail
     const logDetailVisible = ref(false)
     const selectedLog = ref(null)
     
-    // 拒绝日志
+    // Reject log
     const rejectDialogVisible = ref(false)
     const rejectLog = ref(null)
     const rejectFormRef = ref(null)
@@ -261,53 +261,53 @@ export default {
     })
     const rejectRules = {
       reason: [
-        { required: true, message: '请输入拒绝原因', trigger: 'blur' },
-        { min: 5, message: '拒绝原因至少5个字符', trigger: 'blur' }
+        { required: true, message: 'Please enter the rejection reason', trigger: 'blur' },
+        { min: 5, message: 'Rejection reason must be at least 5 characters', trigger: 'blur' }
       ]
     }
     
-    // 加载日志列表
+    // Load the logs list
     const loadLogsList = () => {
       loading.value = true
       
-      // 模拟API请求
+      // Mock API request
       setTimeout(() => {
-        // 模拟数据
+        // Mock data
         const allLogs = [
           {
             id: 1,
-            title: '《三体》读后感',
-            author: '张三',
+            title: 'To Kill a Mockingbird - Analysis',
+            author: 'John Smith',
             submitDate: '2023-04-05 14:30',
             readDate: '2023-04-01',
-            readDuration: '3小时',
-            content: '《三体》是刘慈欣创作的科幻小说，讲述了地球文明与三体文明的相遇、对抗。书中描绘了宇宙中的黑暗森林法则，展现了人类在极端环境下的各种选择。这本书让我深刻体会到宇宙的广袤和人类的渺小，同时也思考了文明存续的条件和可能性。刘慈欣的想象力令人惊叹，故事情节引人入胜，值得一读。',
+            readDuration: '3 hours',
+            content: 'In this American classic, Harper Lee explores themes of racial injustice and moral growth through the eyes of young Scout Finch. The character of Atticus Finch represents moral integrity and wisdom, showing courage in the face of prejudice. I was particularly moved by the way Lee portrays childhood innocence confronting the harsh realities of adult society. The novel reminds us that empathy is essential for understanding others, captured in Atticus\'s famous quote about walking in another person\'s shoes.',
             status: 'pending'
           },
           {
             id: 2,
-            title: '《百年孤独》阅读心得',
-            author: '李四',
+            title: 'One Hundred Years of Solitude - Notes',
+            author: 'Emma Johnson',
             submitDate: '2023-04-04 10:15',
             readDate: '2023-03-28',
-            readDuration: '5小时',
-            content: '《百年孤独》是马尔克斯的代表作，讲述了布恩迪亚家族七代人的故事。小说通过魔幻现实主义的手法，将拉丁美洲的历史与神话交织在一起。阅读这部作品时，我被其丰富的想象力和浓厚的寓意所震撼。书中的孤独主题贯穿始终，令人深思。马尔克斯笔下的马孔多就像一个微缩的世界，反映了人类社会的各种矛盾与挣扎。',
+            readDuration: '5 hours',
+            content: 'One Hundred Years of Solitude is Gabriel García Márquez\'s masterpiece, chronicling seven generations of the Buendía family. Through magical realism, the novel interweaves Latin American history with mythology. Reading this work, I was amazed by the rich imagination and profound symbolism. The theme of solitude permeates throughout, prompting deep reflection. Márquez\'s Macondo is like a microcosm of the world, reflecting various contradictions and struggles in human society.',
             status: 'approved'
           },
           {
             id: 3,
-            title: '《人类简史》读书笔记',
-            author: '王五',
+            title: 'Sapiens: A Brief History of Humankind - Reading Notes',
+            author: 'Michael Wong',
             submitDate: '2023-04-03 16:45',
             readDate: '2023-03-25',
-            readDuration: '4小时',
-            content: '《人类简史》从生物学视角出发，讲述了智人如何从非洲大草原走向全球统治地位的历程。作者尤瓦尔·赫拉利的观点独特而犀利，他认为农业革命是人类史上最大的陷阱，而信息和想象力是智人成功的关键。这本书打破了我对历史的传统认知，让我重新思考人类社会的发展轨迹和未来走向。尤其是关于"虚构故事的力量"这一观点，深刻揭示了人类社会运作的核心机制。',
+            readDuration: '4 hours',
+            content: 'Sapiens offers a biological perspective on how Homo sapiens rose from the African savannah to global dominance. Author Yuval Noah Harari presents unique and incisive viewpoints, arguing that the Agricultural Revolution was humanity\'s greatest trap, while information and imagination were key to our success. This book shattered my traditional understanding of history, making me reconsider the development trajectory and future direction of human society. Particularly, the concept of "the power of fictional stories" profoundly reveals the core mechanisms of human social operation.',
             status: 'rejected',
-            rejectReason: '内容过于简单，请增加个人阅读感受和思考。'
+            rejectReason: 'Content is too general. Please add more personal reading experiences and reflections.'
           }
         ]
         
-        // 根据筛选条件过滤
+        // Filter based on status
         if (statusFilter.value !== 'all') {
           logsList.value = allLogs.filter(log => log.status === statusFilter.value)
         } else {
@@ -319,18 +319,18 @@ export default {
       }, 500)
     }
     
-    // 初始化
+    // Initialize
     onMounted(() => {
       loadLogsList()
     })
     
-    // 筛选处理
+    // Filter processing
     const handleStatusChange = () => {
       currentPage.value = 1
       loadLogsList()
     }
     
-    // 分页处理
+    // Pagination processing
     const handleSizeChange = (size) => {
       pageSize.value = size
       loadLogsList()
@@ -341,7 +341,7 @@ export default {
       loadLogsList()
     }
     
-    // 查看日志详情
+    // View log details
     const viewLogDetail = (logId) => {
       const log = logsList.value.find(l => l.id === logId)
       if (log) {
@@ -350,29 +350,29 @@ export default {
       }
     }
     
-    // 批准日志
+    // Approve log
     const approveLog = (log) => {
       ElMessageBox.confirm(
-        `确定要通过日志《${log.title}》吗？`,
-        '提示',
+        `Are you sure you want to approve the log "${log.title}"?`,
+        'Confirmation',
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
           type: 'info'
         }
       ).then(() => {
-        // 模拟API请求
+        // Mock API request
         setTimeout(() => {
           const index = logsList.value.findIndex(l => l.id === log.id)
           if (index !== -1) {
             logsList.value[index].status = 'approved'
           }
-          ElMessage.success('日志已通过审核')
+          ElMessage.success('Log has been approved')
         }, 500)
       }).catch(() => {})
     }
     
-    // 拒绝日志
+    // Reject log
     const openRejectDialog = (log) => {
       rejectLog.value = log
       rejectDialogVisible.value = true
@@ -383,7 +383,7 @@ export default {
       
       await rejectFormRef.value.validate((valid) => {
         if (valid) {
-          // 模拟API请求
+          // Mock API request
           setTimeout(() => {
             const index = logsList.value.findIndex(l => l.id === rejectLog.value.id)
             if (index !== -1) {
@@ -393,13 +393,13 @@ export default {
             
             rejectDialogVisible.value = false
             rejectForm.reason = ''
-            ElMessage.success('已拒绝通过该日志')
+            ElMessage.success('Log has been rejected')
           }, 500)
         }
       })
     }
     
-    // 更多操作
+    // More actions
     const handleCommand = (command, log) => {
       switch (command) {
         case 'delete':
@@ -411,43 +411,43 @@ export default {
       }
     }
     
-    // 删除日志
+    // Delete log
     const deleteLog = (log) => {
       ElMessageBox.confirm(
-        `确定要删除日志《${log.title}》吗？删除后将无法恢复。`,
-        '警告',
+        `Are you sure you want to delete the log "${log.title}"? This action cannot be undone.`,
+        'Warning',
         {
-          confirmButtonText: '确定删除',
-          cancelButtonText: '取消',
+          confirmButtonText: 'Delete',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }
       ).then(() => {
-        // 模拟API请求
+        // Mock API request
         setTimeout(() => {
           logsList.value = logsList.value.filter(l => l.id !== log.id)
-          ElMessage.success('日志已删除')
+          ElMessage.success('Log has been deleted')
         }, 500)
       }).catch(() => {})
     }
     
-    // 封禁作者
+    // Ban author
     const banAuthor = (log) => {
       ElMessageBox.confirm(
-        `确定要封禁用户 ${log.author} 吗？`,
-        '警告',
+        `Are you sure you want to ban user ${log.author}?`,
+        'Warning',
         {
-          confirmButtonText: '确定封禁',
-          cancelButtonText: '取消',
+          confirmButtonText: 'Ban User',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }
       ).then(() => {
         router.push('/admin/users')
-        // 这里需要实际集成用户管理的封禁流程
-        ElMessage.info('已跳转到用户管理页面，请在那里完成封禁操作')
+        // Integration with user management ban process needed here
+        ElMessage.info('Redirected to User Management page. Please complete the ban operation there.')
       }).catch(() => {})
     }
     
-    // 辅助函数
+    // Helper function
     const truncateContent = (content) => {
       return content.length > 150 ? content.substring(0, 150) + '...' : content
     }
@@ -463,10 +463,10 @@ export default {
     
     const getStatusText = (status) => {
       switch (status) {
-        case 'pending': return '待审核'
-        case 'approved': return '已通过'
-        case 'rejected': return '已拒绝'
-        default: return '未知'
+        case 'pending': return 'Pending Review'
+        case 'approved': return 'Approved'
+        case 'rejected': return 'Rejected'
+        default: return 'Unknown'
       }
     }
     
@@ -517,7 +517,7 @@ export default {
   font-weight: 500;
 }
 
-/* 筛选区域 */
+/* Filter section */
 .filter-section {
   display: flex;
   margin-bottom: 20px;
@@ -528,7 +528,7 @@ export default {
   width: 120px;
 }
 
-/* 日志列表 */
+/* Log list */
 .logs-container {
   background: #fff;
   border-radius: 8px;
@@ -611,7 +611,7 @@ export default {
   margin-bottom: 10px;
 }
 
-/* 日志详情 */
+/* Log details */
 .log-detail {
   padding: 0 10px;
 }
@@ -686,7 +686,7 @@ export default {
   color: #606266;
 }
 
-/* 拒绝对话框 */
+/* Rejection dialog */
 .reject-dialog p {
   margin-bottom: 15px;
 }

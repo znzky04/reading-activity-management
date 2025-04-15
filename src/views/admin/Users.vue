@@ -1,13 +1,13 @@
 <template>
   <div class="admin-users">
     <div class="container">
-      <h1 class="page-title">用户管理</h1>
+      <h1 class="page-title">User Management</h1>
       
       <!-- 筛选/搜索区域 -->
       <div class="filter-section">
         <el-input 
           v-model="searchQuery" 
-          placeholder="搜索邮箱/用户名" 
+          placeholder="Search by email/username" 
           clearable
           @clear="handleSearch"
           class="search-input"
@@ -21,13 +21,13 @@
         
         <el-select 
           v-model="statusFilter" 
-          placeholder="状态筛选" 
+          placeholder="Status Filter" 
           @change="handleSearch"
           class="status-filter"
         >
-          <el-option label="全部" value=""></el-option>
-          <el-option label="正常" value="active"></el-option>
-          <el-option label="已封禁" value="banned"></el-option>
+          <el-option label="All" value=""></el-option>
+          <el-option label="Active" value="active"></el-option>
+          <el-option label="Banned" value="banned"></el-option>
         </el-select>
       </div>
       
@@ -41,36 +41,36 @@
           stripe
           row-key="id"
         >
-          <el-table-column label="头像" width="80">
+          <el-table-column label="Avatar" width="80">
             <template #default="scope">
               <el-avatar :src="scope.row.avatar" :size="40"></el-avatar>
             </template>
           </el-table-column>
           
-          <el-table-column prop="email" label="邮箱" min-width="180"></el-table-column>
+          <el-table-column prop="email" label="Email" min-width="180"></el-table-column>
           
-          <el-table-column prop="username" label="用户名" min-width="120"></el-table-column>
+          <el-table-column prop="username" label="Username" min-width="120"></el-table-column>
           
-          <el-table-column prop="registerDate" label="注册时间" min-width="140"></el-table-column>
+          <el-table-column prop="registerDate" label="Registration Date" min-width="140"></el-table-column>
           
-          <el-table-column prop="status" label="状态" width="100">
+          <el-table-column prop="status" label="Status" width="100">
             <template #default="scope">
               <el-tag 
                 :type="scope.row.status === 'active' ? 'success' : 'danger'"
               >
-                {{ scope.row.status === 'active' ? '正常' : '已封禁' }}
+                {{ scope.row.status === 'active' ? 'Active' : 'Banned' }}
               </el-tag>
             </template>
           </el-table-column>
           
-          <el-table-column label="操作" width="220">
+          <el-table-column label="Actions" width="220">
             <template #default="scope">
               <el-button 
                 size="small" 
                 type="primary" 
                 @click="viewUserDetails(scope.row.id)"
               >
-                详情
+                Details
               </el-button>
               
               <el-button 
@@ -78,7 +78,7 @@
                 :type="scope.row.status === 'active' ? 'danger' : 'success'"
                 @click="toggleUserStatus(scope.row)"
               >
-                {{ scope.row.status === 'active' ? '封禁' : '解禁' }}
+                {{ scope.row.status === 'active' ? 'Ban' : 'Unban' }}
               </el-button>
             </template>
           </el-table-column>
@@ -102,7 +102,7 @@
       <!-- 用户详情对话框 -->
       <el-dialog 
         v-model="userDetailsVisible" 
-        title="用户详情" 
+        title="User Details" 
         width="600px"
       >
         <div v-if="selectedUser" class="user-details">
@@ -115,59 +115,59 @@
           </div>
           
           <div class="detail-item">
-            <span class="item-label">ID：</span>
+            <span class="item-label">ID:</span>
             <span>{{ selectedUser.id }}</span>
           </div>
           
           <div class="detail-item">
-            <span class="item-label">注册时间：</span>
+            <span class="item-label">Registration Date:</span>
             <span>{{ selectedUser.registerDate }}</span>
           </div>
           
           <div class="detail-item">
-            <span class="item-label">最后登录：</span>
+            <span class="item-label">Last Login:</span>
             <span>{{ selectedUser.lastLogin }}</span>
           </div>
           
           <div class="detail-item">
-            <span class="item-label">阅读日志数：</span>
+            <span class="item-label">Reading Logs:</span>
             <span>{{ selectedUser.logCount }}</span>
           </div>
           
           <div class="detail-item">
-            <span class="item-label">状态：</span>
+            <span class="item-label">Status:</span>
             <el-tag 
               :type="selectedUser.status === 'active' ? 'success' : 'danger'"
             >
-              {{ selectedUser.status === 'active' ? '正常' : '已封禁' }}
+              {{ selectedUser.status === 'active' ? 'Active' : 'Banned' }}
             </el-tag>
           </div>
           
           <template v-if="selectedUser.status === 'banned'">
             <div class="detail-item">
-              <span class="item-label">封禁原因：</span>
+              <span class="item-label">Ban Reason:</span>
               <span>{{ selectedUser.banReason }}</span>
             </div>
             
             <div class="detail-item">
-              <span class="item-label">封禁时间：</span>
+              <span class="item-label">Ban Date:</span>
               <span>{{ selectedUser.banDate }}</span>
             </div>
           </template>
           
           <div class="user-logs">
-            <h4>最近阅读日志</h4>
+            <h4>Recent Reading Logs</h4>
             <el-table :data="selectedUser.recentLogs" style="width: 100%" size="small">
-              <el-table-column prop="title" label="标题" min-width="150"></el-table-column>
-              <el-table-column prop="date" label="日期" width="100"></el-table-column>
-              <el-table-column label="操作" width="80">
+              <el-table-column prop="title" label="Title" min-width="150"></el-table-column>
+              <el-table-column prop="date" label="Date" width="100"></el-table-column>
+              <el-table-column label="Actions" width="80">
                 <template #default="scope">
                   <el-button 
                     size="mini" 
                     type="text" 
                     @click="viewLog(scope.row.id)"
                   >
-                    查看
+                    View
                   </el-button>
                 </template>
               </el-table-column>
@@ -176,30 +176,30 @@
         </div>
       </el-dialog>
       
-      <!-- 封禁用户确认对话框 -->
+      <!-- Ban User Confirmation Dialog -->
       <el-dialog 
         v-model="banDialogVisible" 
-        title="封禁用户" 
+        title="Ban User" 
         width="500px"
       >
         <div class="ban-dialog">
-          <p>您确定要封禁用户 <strong>{{ banUser?.username }}</strong> 吗？</p>
+          <p>Are you sure you want to ban user <strong>{{ banUser?.username }}</strong>?</p>
           
-          <el-form :model="banForm" :rules="banRules" ref="banFormRef" label-width="80px">
-            <el-form-item label="封禁原因" prop="reason">
+          <el-form :model="banForm" :rules="banRules" ref="banFormRef" label-width="100px">
+            <el-form-item label="Ban Reason" prop="reason">
               <el-input 
                 type="textarea" 
                 v-model="banForm.reason"
                 :rows="3"
-                placeholder="请输入封禁原因"
+                placeholder="Please enter the reason for the ban"
               ></el-input>
             </el-form-item>
           </el-form>
         </div>
         
         <template #footer>
-          <el-button @click="banDialogVisible = false">取消</el-button>
-          <el-button type="danger" @click="confirmBanUser">确认封禁</el-button>
+          <el-button @click="banDialogVisible = false">Cancel</el-button>
+          <el-button type="danger" @click="confirmBanUser">Confirm Ban</el-button>
         </template>
       </el-dialog>
     </div>
@@ -242,8 +242,8 @@ export default {
     })
     const banRules = {
       reason: [
-        { required: true, message: '请输入封禁原因', trigger: 'blur' },
-        { min: 5, message: '封禁原因至少5个字符', trigger: 'blur' }
+        { required: true, message: 'Please enter the reason for the ban', trigger: 'blur' },
+        { min: 5, message: 'The ban reason must be at least 5 characters long', trigger: 'blur' }
       ]
     }
     
@@ -253,44 +253,44 @@ export default {
       
       // 模拟API请求
       setTimeout(() => {
-        // 模拟的数据
+        // Simulated data
         usersList.value = [
           {
             id: 1,
-            username: '张三',
-            email: 'zhangsan@example.com',
+            username: 'John Smith',
+            email: 'johnsmith@example.com',
             avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
             registerDate: '2023-03-15',
             lastLogin: '2023-04-08 14:30:25',
             status: 'active',
             logCount: 12,
             recentLogs: [
-              { id: 101, title: '《三体》读后感', date: '2023-04-05' },
-              { id: 98, title: '《百年孤独》笔记', date: '2023-04-01' }
+              { id: 101, title: 'The Three-Body Problem - Review', date: '2023-04-05' },
+              { id: 98, title: 'One Hundred Years of Solitude - Notes', date: '2023-04-01' }
             ]
           },
           {
             id: 2,
-            username: '李四',
-            email: 'lisi@example.com',
+            username: 'Emma Johnson',
+            email: 'emma.j@example.com',
             avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
             registerDate: '2023-03-10',
             lastLogin: '2023-04-07 09:15:40',
             status: 'active',
             logCount: 8,
             recentLogs: [
-              { id: 95, title: '《红楼梦》读书笔记', date: '2023-04-02' }
+              { id: 95, title: 'Dream of the Red Chamber - Reading Notes', date: '2023-04-02' }
             ]
           },
           {
             id: 3,
-            username: '王五',
-            email: 'wangwu@example.com',
+            username: 'Michael Wong',
+            email: 'michael.w@example.com',
             avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
             registerDate: '2023-02-20',
             lastLogin: '2023-04-01 16:45:10',
             status: 'banned',
-            banReason: '违反社区规范：发布了不适当的内容',
+            banReason: 'Violation of community guidelines: posted inappropriate content',
             banDate: '2023-04-02 10:30:45',
             logCount: 5,
             recentLogs: []

@@ -2,25 +2,31 @@
   <MainLayout>
     <!-- 顶部 Banner / Hero Section -->
     <section class="hero">
-      <div class="hero-content">
-        <h1 class="hero-title">记录阅读，分享成长</h1>
-        <p class="hero-subtitle">专业的阅读活动管理系统，让您的阅读更有价值</p>
+      <div class="hero-content" ref="heroContent" v-motion>
+        <h1 class="hero-title">Record Reading, Share Growth</h1>
+        <p class="hero-subtitle">Professional Reading Activity Management System, Make Your Reading More Valuable</p>
         <div class="hero-actions">
-          <el-button type="primary" size="large" @click="$router.push('/auth')">开始记录</el-button>
-          <el-button size="large" plain>了解更多</el-button>
+          <el-button type="primary" size="large" @click="$router.push('/auth')" 
+            v-motion="{ hover: { scale: 1.1 } }">Start Recording</el-button>
+          <el-button size="large" plain 
+            v-motion="{ hover: { scale: 1.1 } }">Learn More</el-button>
         </div>
       </div>
-      <div class="hero-image">
-        <img src="../assets/hero-image.svg" alt="阅读管理" />
+      <div class="hero-image" ref="heroImage" v-motion>
+        <img src="../assets/hero-image.svg" alt="Reading Management" />
       </div>
     </section>
     
     <!-- 功能特点 -->
     <section class="features">
-      <h2 class="section-title">核心功能</h2>
+      <h2 class="section-title" data-aos="fade-up">Core Features</h2>
       
       <div class="feature-grid">
-        <div class="feature-card" v-for="(feature, index) in features" :key="index">
+        <div class="feature-card" 
+          v-for="(feature, index) in features" 
+          :key="index"
+          data-aos="fade-up"
+          :data-aos-delay="index * 100">
           <el-icon :size="36" class="feature-icon">
             <component :is="feature.icon"></component>
           </el-icon>
@@ -31,11 +37,15 @@
     </section>
     
     <!-- 系统数据概览 -->
-    <section class="stats">
-      <h2 class="section-title">平台数据</h2>
+    <section class="stats" data-aos="fade-up">
+      <h2 class="section-title">Platform Data</h2>
       
       <div class="stats-grid">
-        <div class="stat-card" v-for="(stat, index) in stats" :key="index">
+        <div class="stat-card" 
+          v-for="(stat, index) in stats" 
+          :key="index"
+          data-aos="zoom-in"
+          :data-aos-delay="index * 100">
           <div class="stat-value">{{ stat.value }}</div>
           <div class="stat-label">{{ stat.label }}</div>
         </div>
@@ -43,59 +53,99 @@
     </section>
     
     <!-- 开始使用 CTA -->
-    <section class="cta">
-      <h2 class="cta-title">立即开始您的阅读之旅</h2>
-      <p class="cta-desc">加入我们，记录每一次阅读，分享每一步成长</p>
-      <el-button type="primary" size="large" @click="$router.push('/auth')">免费注册</el-button>
+    <section class="cta" data-aos="fade-up">
+      <h2 class="cta-title">Start Your Reading Journey</h2>
+      <p class="cta-desc">Join Us, Record Every Reading, Share Every Step of Growth</p>
+      <el-button type="primary" size="large" 
+        @click="$router.push('/auth')"
+        v-motion="{ hover: { scale: 1.1 } }">Free Registration</el-button>
     </section>
   </MainLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import MainLayout from '../layouts/MainLayout.vue'
 import { Document, Reading, DataAnalysis, Timer, User, Share } from '@element-plus/icons-vue'
+import { useMotion } from '@vueuse/motion'
+import gsap from 'gsap'
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+
+// 初始化 AOS
+onMounted(() => {
+  AOS.init({
+    duration: 1000,
+    once: true
+  })
+})
+
+// Hero 动画
+const heroContent = ref(null)
+const heroImage = ref(null)
+
+// VueUse Motion 动画
+const { motion: heroMotion } = useMotion(heroContent, {
+  initial: { opacity: 0, x: -50 },
+  enter: { opacity: 1, x: 0, transition: { duration: 800 } }
+})
+
+const { motion: imageMotion } = useMotion(heroImage, {
+  initial: { opacity: 0, x: 50 },
+  enter: { opacity: 1, x: 0, transition: { duration: 800 } }
+})
+
+// GSAP 动画
+onMounted(() => {
+  gsap.from('.stat-value', {
+    textContent: 0,
+    duration: 2,
+    ease: 'power1.out',
+    snap: { textContent: 1 },
+    stagger: 0.2
+  })
+})
 
 // 功能特点数据
 const features = ref([
   {
     icon: 'Document',
-    title: '阅读日志',
-    description: '记录您的阅读笔记、心得体会，永久保存您的思考'
+    title: 'Reading Log',
+    description: 'Record Your Reading Notes, Thoughts, and Experiences Forever'
   },
   {
     icon: 'Timer',
-    title: '时间统计',
-    description: '自动统计阅读时长，量化您的阅读习惯'
+    title: 'Time Statistics',
+    description: 'Automatically Track Reading Time and Quantify Your Reading Habits'
   },
   {
     icon: 'DataAnalysis',
-    title: '数据分析',
-    description: '可视化展示阅读数据，帮助您了解自己的阅读模式'
+    title: 'Data Analysis',
+    description: 'Visualize Reading Data to Help You Understand Your Reading Patterns'
   },
   {
     icon: 'Reading',
-    title: '阅读规划',
-    description: '制定阅读计划，追踪阅读进度'
+    title: 'Reading Planning',
+    description: 'Create Reading Plans and Track Reading Progress'
   },
   {
     icon: 'Share',
-    title: '分享交流',
-    description: '与其他读者分享您的见解，获取更多阅读灵感'
+    title: 'Sharing and Discussion',
+    description: 'Share Your Insights with Other Readers and Get More Reading Inspiration'
   },
   {
     icon: 'User',
-    title: '个性化推荐',
-    description: '基于您的阅读偏好，推荐适合您的书籍'
+    title: 'Personalized Recommendation',
+    description: 'Recommend Books Suitable for You Based on Your Reading Preferences'
   }
 ])
 
 // 平台数据
 const stats = ref([
-  { value: '10,000+', label: '注册用户' },
-  { value: '50,000+', label: '阅读日志' },
-  { value: '100,000+', label: '阅读小时' },
-  { value: '5,000+', label: '分享讨论' }
+  { value: '10,000+', label: 'Registered Users' },
+  { value: '50,000+', label: 'Reading Logs' },
+  { value: '100,000+', label: 'Reading Hours' },
+  { value: '5,000+', label: 'Sharing Discussions' }
 ])
 </script>
 
@@ -166,16 +216,22 @@ const stats = ref([
   border-radius: 8px;
   box-shadow: var(--card-shadow);
   text-align: center;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
 .feature-icon {
   color: var(--primary-color);
   margin-bottom: 16px;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.2);
 }
 
 .feature-title {
@@ -207,6 +263,12 @@ const stats = ref([
   border-radius: 8px;
   box-shadow: var(--card-shadow);
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
 .stat-value {
@@ -229,6 +291,12 @@ const stats = ref([
   padding: 60px;
   border-radius: 12px;
   margin-bottom: 60px;
+  transition: all 0.3s ease;
+}
+
+.cta:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 32px rgba(74,144,226,0.3);
 }
 
 .cta-title {

@@ -2,11 +2,11 @@ import { defineStore } from 'pinia'
 
 export const useLogStore = defineStore('log', {
   state: () => ({
-    logs: [], // 所有日志
-    currentLog: null, // 当前查看的日志
+    logs: [], // All logs
+    currentLog: null, // Currently viewed log
     loading: false,
     totalLogs: 0,
-    readingTime: 0, // 总阅读时间
+    readingTime: 0, // Total reading time
   }),
   
   getters: {
@@ -16,26 +16,52 @@ export const useLogStore = defineStore('log', {
   },
   
   actions: {
-    // 模拟获取日志列表
+    // Mock fetch logs list
     fetchLogs(params = {}) {
       this.loading = true
       
-      // 模拟API调用
+      // Mock API call
       return new Promise((resolve) => {
         setTimeout(() => {
-          // 生成模拟数据
+          // Generate mock data
+          const bookTitles = [
+            "To Kill a Mockingbird",
+            "1984",
+            "Pride and Prejudice",
+            "The Great Gatsby",
+            "The Catcher in the Rye",
+            "Jane Eyre",
+            "Animal Farm",
+            "Lord of the Flies",
+            "The Hobbit",
+            "Brave New World"
+          ];
+          
+          const authors = [
+            "Harper Lee",
+            "George Orwell",
+            "Jane Austen",
+            "F. Scott Fitzgerald",
+            "J.D. Salinger",
+            "Charlotte Brontë",
+            "J.R.R. Tolkien",
+            "William Golding",
+            "Aldous Huxley",
+            "Ernest Hemingway"
+          ];
+          
           const mockLogs = Array.from({ length: 10 }, (_, i) => ({
             id: i + 1,
-            title: `阅读日志 ${i + 1}`,
-            author: '某某作者',
-            date: new Date(Date.now() - i * 86400000).toISOString().split('T')[0], // 日期，每天一个
-            duration: Math.floor(Math.random() * 120) + 30, // 30-150分钟随机
-            content: `这是第 ${i + 1} 条阅读日志的内容。包含了我的阅读笔记和心得体会...`,
-            status: ['approved', 'pending', 'rejected'][Math.floor(Math.random() * 3)] // 随机状态
+            title: bookTitles[i],
+            author: authors[i % authors.length],
+            date: new Date(Date.now() - i * 86400000).toISOString().split('T')[0], // Date, one per day
+            duration: Math.floor(Math.random() * 120) + 30, // 30-150 minutes randomly
+            content: `These are my reading notes for ${bookTitles[i]}. The book explores themes of ${i % 2 === 0 ? 'human nature and society' : 'personal growth and relationships'}, with compelling characters and a well-crafted narrative structure.`,
+            status: ['approved', 'pending', 'rejected'][Math.floor(Math.random() * 3)] // Random status
           }))
           
           this.logs = mockLogs
-          this.totalLogs = 100 // 假设总共有100条
+          this.totalLogs = 100 // Assume 100 total logs
           this.readingTime = mockLogs.reduce((sum, log) => sum + log.duration, 0)
           this.loading = false
           
@@ -47,20 +73,20 @@ export const useLogStore = defineStore('log', {
       })
     },
     
-    // 获取日志详情
+    // Get log details
     fetchLogDetail(id) {
       this.loading = true
       
-      // 模拟API调用
+      // Mock API call
       return new Promise((resolve) => {
         setTimeout(() => {
           const log = this.logs.find(l => l.id == id) || {
             id: id,
-            title: `阅读日志 ${id}`,
-            author: '某某作者',
+            title: `Classic Literature Analysis ${id}`,
+            author: "John Smith",
             date: new Date().toISOString().split('T')[0],
             duration: 60,
-            content: '这是一篇详细的阅读笔记，记录了我对某本书的理解和感悟。\n\n包括了对主要情节的分析，对人物的解读，以及我个人的阅读体会。\n\n这本书主要讲述了...',
+            content: 'This detailed reading journal captures my understanding and reflections on this classic work.\n\nIt includes analysis of the main plot, character interpretations, and my personal reading experience.\n\nThe book primarily discusses themes of morality, society, and personal growth...',
             status: 'approved'
           }
           
@@ -72,17 +98,17 @@ export const useLogStore = defineStore('log', {
       })
     },
     
-    // 创建日志
+    // Create log
     createLog(logData) {
       this.loading = true
       
-      // 模拟API调用
+      // Mock API call
       return new Promise((resolve) => {
         setTimeout(() => {
           const newLog = {
             id: this.logs.length + 1,
             ...logData,
-            status: 'pending' // 新创建的日志默认为待审核
+            status: 'pending' // New logs are pending review by default
           }
           
           this.logs.unshift(newLog)
@@ -93,11 +119,11 @@ export const useLogStore = defineStore('log', {
       })
     },
     
-    // 更新日志
+    // Update log
     updateLog(id, logData) {
       this.loading = true
       
-      // 模拟API调用
+      // Mock API call
       return new Promise((resolve) => {
         setTimeout(() => {
           const index = this.logs.findIndex(l => l.id == id)
@@ -117,11 +143,11 @@ export const useLogStore = defineStore('log', {
       })
     },
     
-    // 删除日志
+    // Delete log
     deleteLog(id) {
       this.loading = true
       
-      // 模拟API调用
+      // Mock API call
       return new Promise((resolve) => {
         setTimeout(() => {
           this.logs = this.logs.filter(log => log.id != id)

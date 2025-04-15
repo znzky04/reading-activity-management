@@ -1,10 +1,13 @@
 <template>
   <div class="layout">
-    <!-- 顶部导航栏 -->
+    <!-- Top Navigation Bar -->
     <header class="header">
       <div class="container header-container">
         <div class="logo">
-          <router-link to="/">阅读活动管理系统</router-link>
+          <router-link to="/">
+            <font-awesome-icon icon="book" class="logo-icon" />
+            Reading Activity Management
+          </router-link>
         </div>
         
         <el-menu
@@ -17,35 +20,68 @@
           active-text-color="#4A90E2"
           router
         >
-          <el-menu-item index="/">首页</el-menu-item>
+          <el-menu-item index="/">
+            <font-awesome-icon icon="home" class="menu-icon" />
+            Home
+          </el-menu-item>
           
-          <!-- 登录后显示的菜单 -->
+          <!-- Menu items shown after login -->
           <template v-if="userStore.isLoggedIn">
-            <el-menu-item index="/dashboard">我的主页</el-menu-item>
-            <el-menu-item index="/logs">阅读日志</el-menu-item>
-            <el-menu-item index="/messages">消息中心</el-menu-item>
-            <el-menu-item index="/feedback">反馈</el-menu-item>
+            <el-menu-item index="/dashboard">
+              <font-awesome-icon icon="tasks" class="menu-icon" />
+              My Dashboard
+            </el-menu-item>
+            <el-menu-item index="/logs">
+              <font-awesome-icon :icon="['far', 'bookmark']" class="menu-icon" />
+              Reading Logs
+            </el-menu-item>
+            <el-menu-item index="/messages">
+              <font-awesome-icon :icon="['far', 'comment']" class="menu-icon" />
+              Messages
+            </el-menu-item>
+            <el-menu-item index="/feedback">
+              <font-awesome-icon :icon="['far', 'thumbs-up']" class="menu-icon" />
+              Feedback
+            </el-menu-item>
             
-            <!-- 管理员菜单 -->
+            <!-- Admin menu -->
             <template v-if="userStore.isAdmin">
               <el-sub-menu index="/admin">
-                <template #title>管理功能</template>
-                <el-menu-item index="/admin/dashboard">管理员主页</el-menu-item>
-                <el-menu-item index="/admin/users">用户管理</el-menu-item>
-                <el-menu-item index="/admin/reviews">日志审核</el-menu-item>
-                <el-menu-item index="/admin/feedbacks">用户反馈</el-menu-item>
+                <template #title>
+                  <font-awesome-icon icon="cog" class="menu-icon" />
+                  Administration
+                </template>
+                <el-menu-item index="/admin/dashboard">
+                  <font-awesome-icon icon="chart-line" class="menu-icon" />
+                  Admin Dashboard
+                </el-menu-item>
+                <el-menu-item index="/admin/users">
+                  <font-awesome-icon :icon="['far', 'user']" class="menu-icon" />
+                  User Management
+                </el-menu-item>
+                <el-menu-item index="/admin/reviews">
+                  <font-awesome-icon icon="eye" class="menu-icon" />
+                  Log Reviews
+                </el-menu-item>
+                <el-menu-item index="/admin/feedbacks">
+                  <font-awesome-icon :icon="['far', 'comment']" class="menu-icon" />
+                  User Feedback
+                </el-menu-item>
               </el-sub-menu>
             </template>
           </template>
         </el-menu>
         
         <div class="user-actions">
-          <!-- 未登录显示登录注册按钮 -->
+          <!-- Login/Register button for guests -->
           <template v-if="!userStore.isLoggedIn">
-            <el-button type="text" @click="$router.push('/auth')">登录 / 注册</el-button>
+            <el-button type="text" @click="$router.push('/auth')">
+              <font-awesome-icon :icon="['far', 'user']" class="button-icon" />
+              Login / Register
+            </el-button>
           </template>
           
-          <!-- 已登录显示用户头像和下拉菜单 -->
+          <!-- User avatar and dropdown menu for logged in users -->
           <template v-else>
             <el-dropdown trigger="click" @command="handleCommand">
               <div class="user-avatar">
@@ -54,9 +90,18 @@
               </div>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="dashboard">我的主页</el-dropdown-item>
-                  <el-dropdown-item command="settings">设置</el-dropdown-item>
-                  <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+                  <el-dropdown-item command="dashboard">
+                    <font-awesome-icon icon="tasks" class="dropdown-icon" />
+                    My Dashboard
+                  </el-dropdown-item>
+                  <el-dropdown-item command="settings">
+                    <font-awesome-icon icon="cog" class="dropdown-icon" />
+                    Settings
+                  </el-dropdown-item>
+                  <el-dropdown-item divided command="logout">
+                    <font-awesome-icon icon="sign-out-alt" class="dropdown-icon" />
+                    Logout
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -65,17 +110,23 @@
       </div>
     </header>
     
-    <!-- 主内容区 -->
+    <!-- Main Content Area -->
     <main class="main-content">
       <div class="container">
         <slot></slot>
       </div>
     </main>
     
-    <!-- 页脚 -->
+    <!-- Footer -->
     <footer class="footer">
       <div class="container">
-        <p>© {{ new Date().getFullYear() }} 阅读活动管理系统 - 基于 Vue 3 开发</p>
+        <p>
+          © {{ new Date().getFullYear() }} Reading Activity Management System - Developed with Vue 3
+          <span class="social-icons">
+            <font-awesome-icon :icon="['fab', 'github']" class="social-icon" />
+            <font-awesome-icon :icon="['fab', 'weixin']" class="social-icon" />
+          </span>
+        </p>
       </div>
     </footer>
   </div>
@@ -90,10 +141,10 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
-// 当前激活的菜单
+// Current active menu item
 const activeIndex = computed(() => route.path)
 
-// 处理用户下拉菜单命令
+// Handle user dropdown menu commands
 const handleCommand = (command) => {
   if (command === 'logout') {
     userStore.logout()
@@ -134,11 +185,33 @@ const handleCommand = (command) => {
 .logo a {
   color: var(--primary-color);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  color: var(--el-color-primary);
+  font-size: 24px;
 }
 
 .menu {
   flex: 1;
   border-bottom: none;
+}
+
+.menu-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.button-icon {
+  margin-right: 5px;
+}
+
+.dropdown-icon {
+  margin-right: 5px;
+  width: 16px;
 }
 
 .user-actions {
@@ -174,7 +247,23 @@ const handleCommand = (command) => {
   text-align: center;
 }
 
-/* 响应式调整 */
+.social-icons {
+  display: inline-flex;
+  gap: 12px;
+  margin-left: 15px;
+}
+
+.social-icon {
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.social-icon:hover {
+  color: var(--el-color-primary);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .header-container {
     flex-direction: column;

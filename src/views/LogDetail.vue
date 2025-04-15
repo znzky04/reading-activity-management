@@ -1,42 +1,42 @@
 <template>
   <MainLayout>
     <div class="log-detail-page">
-      <!-- 顶部操作栏 -->
+      <!-- Top Action Bar -->
       <div class="action-bar">
-        <el-button @click="goBack" icon="ArrowLeft">返回</el-button>
+        <el-button @click="goBack" icon="ArrowLeft">Return</el-button>
         
         <div class="right-actions" v-if="!loading && log">
-          <!-- 用户可以编辑和删除自己的日志 -->
+          <!-- Users can edit and delete their own logs -->
           <el-button type="primary" plain @click="editLog">
-            <el-icon><Edit /></el-icon> 编辑
+            <el-icon><Edit /></el-icon> Edit
           </el-button>
           <el-button type="danger" plain @click="confirmDelete">
-            <el-icon><Delete /></el-icon> 删除
+            <el-icon><Delete /></el-icon> Delete
           </el-button>
           
-          <!-- 管理员可以标记违规 -->
+          <!-- Admins can mark as violation -->
           <el-button 
             v-if="userStore.isAdmin && log.status !== 'rejected'" 
             type="warning" 
             plain 
             @click="rejectDialog.visible = true"
           >
-            <el-icon><Warning /></el-icon> 标记违规
+            <el-icon><Warning /></el-icon> Mark as Violation
           </el-button>
         </div>
       </div>
       
-      <!-- 加载中 -->
+      <!-- Loading -->
       <div v-if="loading" class="loading-container">
         <el-skeleton :rows="15" animated />
       </div>
       
-      <!-- 主要内容 -->
+      <!-- Main Content -->
       <template v-else-if="log">
-        <!-- 日志状态提示 -->
+        <!-- Log Status Alert -->
         <el-alert
           v-if="log.status === 'pending'"
-          title="此日志正在审核中，审核通过后将对其他用户可见"
+          title="This log is under review, it will be visible to other users after approval"
           type="warning"
           show-icon
           :closable="false"
@@ -45,33 +45,33 @@
         
         <el-alert
           v-if="log.status === 'rejected'"
-          :title="`此日志未通过审核: ${log.rejectReason || '违反平台规定'}`"
+          :title="`This log did not pass review: ${log.rejectReason || 'Violated platform rules'}`"
           type="error"
           show-icon
           :closable="false"
           class="status-alert"
         />
         
-        <!-- 日志头部信息 -->
+        <!-- Log Header Information -->
         <div class="log-header">
           <h1 class="log-title">{{ log.title }}</h1>
           
           <div class="log-meta">
             <span class="meta-item">
               <el-icon><User /></el-icon> 
-              作者: {{ log.author }}
+              Author: {{ log.author }}
             </span>
             <span class="meta-item">
               <el-icon><Calendar /></el-icon>
-              阅读日期: {{ log.date }}
+              Reading Date: {{ log.date }}
             </span>
             <span class="meta-item">
               <el-icon><Timer /></el-icon>
-              阅读时长: {{ log.duration }} 分钟
+              Reading Duration: {{ log.duration }} minutes
             </span>
             <span class="meta-item">
               <el-icon><InfoFilled /></el-icon>
-              状态: 
+              Status: 
               <el-tag :type="getStatusType(log.status)" size="small">
                 {{ getStatusText(log.status) }}
               </el-tag>
@@ -79,76 +79,76 @@
           </div>
         </div>
         
-        <!-- 日志内容 -->
+        <!-- Log Content -->
         <el-card class="log-content-card" shadow="hover">
           <div class="log-content" v-html="formattedContent"></div>
         </el-card>
       </template>
       
-      <!-- 数据不存在 -->
+      <!-- Data Not Found -->
       <el-empty 
         v-else 
-        description="找不到该阅读日志" 
+        description="Reading log not found" 
         class="empty-container"
       >
-        <el-button type="primary" @click="goBack">返回日志列表</el-button>
+        <el-button type="primary" @click="goBack">Return to Log List</el-button>
       </el-empty>
     </div>
     
-    <!-- 删除确认对话框 -->
+    <!-- Delete Confirmation Dialog -->
     <el-dialog
       v-model="deleteDialog.visible"
-      title="确认删除"
+      title="Confirm Delete"
       width="30%"
       :close-on-click-modal="false"
     >
-      <span>确定要删除这篇阅读日志吗？此操作不可恢复。</span>
+      <span>Are you sure you want to delete this reading log? This operation cannot be undone.</span>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="deleteDialog.visible = false">取消</el-button>
+          <el-button @click="deleteDialog.visible = false">Cancel</el-button>
           <el-button type="danger" @click="deleteLog" :loading="deleteDialog.loading">
-            确认删除
+            Confirm Delete
           </el-button>
         </span>
       </template>
     </el-dialog>
     
-    <!-- 标记违规对话框 -->
+    <!-- Violation Marking Dialog -->
     <el-dialog
       v-model="rejectDialog.visible"
-      title="标记违规"
+      title="Mark as Violation"
       width="40%"
       :close-on-click-modal="false"
     >
       <el-form :model="rejectDialog.form" label-width="100px">
-        <el-form-item label="违规原因" required>
-          <el-select v-model="rejectDialog.form.reason" placeholder="请选择违规原因" style="width: 100%">
-            <el-option label="内容不符合平台规范" value="内容不符合平台规范" />
-            <el-option label="包含敏感内容" value="包含敏感内容" />
-            <el-option label="涉嫌抄袭/侵权" value="涉嫌抄袭/侵权" />
-            <el-option label="其他原因" value="其他原因" />
+        <el-form-item label="Violation Reason" required>
+          <el-select v-model="rejectDialog.form.reason" placeholder="Please select a violation reason" style="width: 100%">
+            <el-option label="Content does not meet platform standards" value="Content does not meet platform standards" />
+            <el-option label="Contains sensitive content" value="Contains sensitive content" />
+            <el-option label="Suspected plagiarism/copyright infringement" value="Suspected plagiarism/copyright infringement" />
+            <el-option label="Other reasons" value="Other reasons" />
           </el-select>
         </el-form-item>
         
-        <el-form-item label="详细说明">
+        <el-form-item label="Detailed Description">
           <el-input 
             v-model="rejectDialog.form.detail" 
             type="textarea" 
             rows="4" 
-            placeholder="请输入详细说明（可选）"
+            placeholder="Please enter detailed description (optional)"
           />
         </el-form-item>
       </el-form>
       
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="rejectDialog.visible = false">取消</el-button>
+          <el-button @click="rejectDialog.visible = false">Cancel</el-button>
           <el-button 
             type="danger" 
             @click="rejectLog"
             :loading="rejectDialog.loading"
           >
-            确认标记违规
+            Confirm Mark as Violation
           </el-button>
         </span>
       </template>
@@ -164,23 +164,27 @@ import { useLogStore } from '../store/log'
 import { useUserStore } from '../store/user'
 import MainLayout from '../layouts/MainLayout.vue'
 import { ArrowLeft, Edit, Delete, User, Calendar, Timer, Warning, InfoFilled } from '@element-plus/icons-vue'
+import gsap from 'gsap'
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+import { useMotion } from '@vueuse/motion'
 
 const route = useRoute()
 const router = useRouter()
 const logStore = useLogStore()
 const userStore = useUserStore()
 
-// 状态
+// States
 const loading = ref(true)
 const log = ref(null)
 
-// 删除对话框
+// Delete dialog
 const deleteDialog = reactive({
   visible: false,
   loading: false
 })
 
-// 标记违规对话框
+// Violation marking dialog
 const rejectDialog = reactive({
   visible: false,
   loading: false,
@@ -190,15 +194,15 @@ const rejectDialog = reactive({
   }
 })
 
-// 计算属性 - 格式化内容（处理换行符）
+// Computed property - formatted content (handling line breaks)
 const formattedContent = computed(() => {
   if (!log.value || !log.value.content) return ''
   
-  // 将换行符转换为 <br>
+  // Convert line breaks to <br>
   return log.value.content.replace(/\n/g, '<br>')
 })
 
-// 获取状态显示类型
+// Get status display type
 const getStatusType = (status) => {
   const map = {
     approved: 'success',
@@ -208,32 +212,32 @@ const getStatusType = (status) => {
   return map[status] || 'info'
 }
 
-// 获取状态显示文本
+// Get status display text
 const getStatusText = (status) => {
   const map = {
-    approved: '已通过',
-    pending: '审核中',
-    rejected: '未通过'
+    approved: 'Approved',
+    pending: 'Under Review',
+    rejected: 'Not Approved'
   }
-  return map[status] || '未知'
+  return map[status] || 'Unknown'
 }
 
-// 返回上一页
+// Go back to previous page
 const goBack = () => {
   router.push('/logs')
 }
 
-// 编辑日志
+// Edit log
 const editLog = () => {
   router.push(`/logs/edit/${route.params.id}`)
 }
 
-// 确认删除
+// Confirm delete
 const confirmDelete = () => {
   deleteDialog.visible = true
 }
 
-// 删除日志
+// Delete log
 const deleteLog = async () => {
   try {
     deleteDialog.loading = true
@@ -241,12 +245,12 @@ const deleteLog = async () => {
     
     ElMessage({
       type: 'success',
-      message: '日志删除成功'
+      message: 'Log deleted successfully'
     })
     
     router.push('/logs')
   } catch (error) {
-    ElMessage.error('删除失败，请稍后再试')
+    ElMessage.error('Deletion failed, please try again later')
     console.error(error)
   } finally {
     deleteDialog.loading = false
@@ -254,45 +258,45 @@ const deleteLog = async () => {
   }
 }
 
-// 标记违规
+// Mark as violation
 const rejectLog = async () => {
   if (!rejectDialog.form.reason) {
-    ElMessage.warning('请选择违规原因')
+    ElMessage.warning('Please select a violation reason')
     return
   }
   
   try {
     rejectDialog.loading = true
     
-    // 构建完整的违规原因
+    // Build complete violation reason
     const rejectReason = rejectDialog.form.detail
       ? `${rejectDialog.form.reason}: ${rejectDialog.form.detail}`
       : rejectDialog.form.reason
     
-    // 更新日志状态
+    // Update log status
     await logStore.updateLog(route.params.id, {
       status: 'rejected',
       rejectReason
     })
     
-    // 重新获取日志详情
+    // Re-fetch log details
     await fetchLogDetail()
     
     ElMessage({
       type: 'success',
-      message: '已标记为违规内容'
+      message: 'Marked as Violation Content'
     })
     
     rejectDialog.visible = false
   } catch (error) {
-    ElMessage.error('操作失败，请稍后再试')
+    ElMessage.error('Operation failed, please try again later')
     console.error(error)
   } finally {
     rejectDialog.loading = false
   }
 }
 
-// 获取日志详情
+// Get log details
 const fetchLogDetail = async () => {
   loading.value = true
   
@@ -300,16 +304,57 @@ const fetchLogDetail = async () => {
     const result = await logStore.fetchLogDetail(route.params.id)
     log.value = result
   } catch (error) {
-    ElMessage.error('获取日志详情失败')
+    ElMessage.error('Failed to get log details')
     console.error(error)
   } finally {
     loading.value = false
   }
 }
 
-// 初始化
+// Initialize
 onMounted(() => {
   fetchLogDetail()
+  AOS.init({
+    duration: 800,
+    once: true
+  })
+})
+
+// Animation reference
+const contentCard = ref(null)
+const { motion: contentMotion } = useMotion(contentCard, {
+  initial: { opacity: 0, y: 20 },
+  enter: { opacity: 1, y: 0, transition: { duration: 600 } }
+})
+
+// GSAP animation
+onMounted(() => {
+  // Title animation
+  gsap.from('.log-title', {
+    opacity: 0,
+    y: -20,
+    duration: 0.8,
+    ease: 'power2.out'
+  })
+
+  // Meta information animation
+  gsap.from('.meta-item', {
+    opacity: 0,
+    x: -20,
+    duration: 0.5,
+    stagger: 0.1,
+    ease: 'power2.out',
+    delay: 0.3
+  })
+
+  // Content animation
+  gsap.from('.log-content', {
+    opacity: 0,
+    y: 20,
+    duration: 0.8,
+    ease: 'power2.out',
+    delay: 0.5
+  })
 })
 </script>
 
@@ -377,7 +422,7 @@ onMounted(() => {
   padding: 60px 0;
 }
 
-/* 响应式调整 */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .action-bar {
     flex-direction: column;
@@ -393,5 +438,35 @@ onMounted(() => {
     flex-direction: column;
     gap: 10px;
   }
+}
+
+/* Add animation transition effect */
+.back-button {
+  margin-bottom: 20px;
+}
+
+.meta-item {
+  transition: all 0.3s ease;
+}
+
+.meta-item:hover {
+  transform: translateX(5px);
+}
+
+.content-card {
+  transition: all 0.3s ease;
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--el-box-shadow-light);
+}
+
+.el-button {
+  transition: all 0.3s ease;
+}
+
+.el-button:hover {
+  transform: translateY(-2px);
 }
 </style> 
